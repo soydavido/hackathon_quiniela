@@ -72,8 +72,10 @@ export class AdminService {
     if (match.status === 'finished') throw new BadRequestException('Este partido ya tiene un resultado registrado.');
 
     if (dto.winnerId !== Number(match.homeTeamId) && dto.winnerId !== Number(match.awayTeamId)) {
+      const home = match.homeTeam?.name ?? match.homeTeamId;
+      const away = match.awayTeam?.name ?? match.awayTeamId;
       throw new BadRequestException(
-        `El id ${dto.winnerId} no corresponde a ninguno de los equipos del partido (${match.homeTeam.name} vs ${match.awayTeam.name}).`,
+        `El id ${dto.winnerId} no corresponde a ninguno de los equipos del partido (${home} vs ${away}).`,
       );
     }
 
@@ -107,7 +109,7 @@ export class AdminService {
     }
 
     return {
-      message: `Resultado registrado: ${match.homeTeam.name} vs ${match.awayTeam.name} — ganador: ${dto.winnerId}`,
+      message: `Resultado registrado: ${match.homeTeam?.name ?? match.homeTeamId} vs ${match.awayTeam?.name ?? match.awayTeamId} — ganador: ${dto.winnerId}`,
       pointsAwarded: points,
     };
   }

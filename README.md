@@ -182,7 +182,7 @@ x-team-token: TEAM-TOKEN-001
 ---
 
 #### `GET /matches/bracket`
-Bracket completo del torneo con las 5 fases. Las rondas que aún no están definidas aparecen con `status: "tbd"` y todos sus campos en `null`. Útil para renderizar el bracket gráfico.
+Bracket completo del torneo con las 5 fases y los 16 partidos. Desde el inicio todos los partidos existen en el sistema — los de rondas posteriores son placeholders con `homeTeam: null` y `awayTeam: null` hasta que se conozcan los clasificados. Útil para renderizar el bracket gráfico.
 
 **Headers:**
 ```
@@ -211,12 +211,12 @@ x-team-token: TEAM-TOKEN-001
       "stage": "cuartos",
       "matches": [
         {
-          "idMatch": null,
-          "matchOrder": null,
+          "idMatch": 9,
+          "matchOrder": 9,
           "homeTeam": null,
           "awayTeam": null,
-          "matchDate": null,
-          "status": "tbd",
+          "matchDate": "2026-07-17T18:00:00.000Z",
+          "status": "pending",
           "winner": null
         }
       ]
@@ -228,11 +228,12 @@ x-team-token: TEAM-TOKEN-001
 }
 ```
 
+> Los partidos placeholder tienen `homeTeam: null` y `awayTeam: null` hasta que el organizador defina los clasificados. Sin embargo, **siempre tienen un `idMatch` real** que se usa para enviar predicciones.
+
 | Campo `status` | Significado |
 |----------------|-------------|
-| `pending` | Partido definido, aún no jugado |
+| `pending` | Partido definido o placeholder, aún no jugado |
 | `finished` | Partido jugado, resultado registrado |
-| `tbd` | Ronda no definida aún (equipos por determinar) |
 
 ---
 
@@ -241,9 +242,13 @@ x-team-token: TEAM-TOKEN-001
 #### `POST /quiniela`
 Registra la quiniela completa de un participante. **Solo se puede enviar una vez — no puede modificarse después.**
 
-La quiniela cubre los **16 partidos del bracket completo** (octavos hasta final). Los partidos de cuartos en adelante existen en el sistema desde el inicio como placeholders sin equipos definidos — para esos, `predictedWinnerId` acepta cualquier equipo del torneo. Para los octavos, solo se acepta `homeTeam` o `awayTeam` del partido.
+La quiniela cubre los **16 partidos del bracket completo** (octavos hasta final). Todos los partidos existen en el sistema desde el inicio — los de rondas posteriores son placeholders sin equipos definidos aún.
 
-Los `matchId` del 1 al 16 corresponden al `matchOrder` del bracket. Los `idFootballTeam` se obtienen de `GET /football-teams`.
+**Reglas de validación por tipo de partido:**
+- **Octavos** (equipos definidos): `predictedWinnerId` debe ser `homeTeam` o `awayTeam` del partido.
+- **Cuartos en adelante** (placeholder sin equipos): `predictedWinnerId` acepta cualquier `idFootballTeam` de los 16 equipos del torneo.
+
+**Cómo obtener los `matchId`:** consulta `GET /matches/bracket` y usa el campo `idMatch` de cada partido. Los `idFootballTeam` se obtienen de `GET /football-teams`.
 
 **Headers:**
 ```
@@ -275,7 +280,9 @@ x-team-token: TEAM-TOKEN-001
 }
 ```
 
-> Los `matchId` son los IDs reales de los partidos en BD. Usa el campo `idMatch` de `GET /matches/bracket` para obtenerlos.
+> Los `matchId` son los `idMatch` reales que devuelve `GET /matches/bracket`. Los IDs del ejemplo asumen inserción en orden — siempre confirma los IDs reales antes de enviar.
+
+> Los `predictedWinnerId` del ejemplo son ilustrativos. Consulta `GET /football-teams` para ver los IDs reales de cada equipo.
 
 **Response `201`:**
 ```json
@@ -289,7 +296,8 @@ x-team-token: TEAM-TOKEN-001
 |--------|---------|
 | `400` | `"Este participante ya registró su quiniela y no puede modificarla."` |
 | `400` | `"El partido con id 1 ya finalizó y no puede predecirse."` |
-| `400` | `"El equipo con id 99 no juega en el partido 1. Equipos válidos: 1, 2."` |
+| `400` | `"El equipo con id 99 no juega en el partido 1. Equipos válidos: 1, 2."` (octavos) |
+| `400` | `"El equipo con id 99 no existe en el torneo."` (cuartos en adelante) |
 | `400` | `"El partido con id 99 no existe."` |
 | `404` | `"Participante no encontrado en este equipo."` |
 
@@ -333,14 +341,18 @@ x-team-token: TEAM-TOKEN-001
       "stage": "cuartos",
       "matches": [
         {
-          "idMatch": null,
-          "matchOrder": null,
+          "idMatch": 9,
+          "matchOrder": 9,
           "homeTeam": null,
           "awayTeam": null,
-          "matchDate": null,
-          "status": "tbd",
+          "matchDate": "2026-07-17T18:00:00.000Z",
+          "status": "pending",
           "winner": null,
-          "prediction": null
+          "prediction": {
+            "idPrediction": 6,
+            "predictedWinner": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "AR", "flagUrl": "https://flagcdn.com/w320/ar.png" },
+            "isCorrect": null
+          }
         }
       ]
     }
@@ -348,8 +360,9 @@ x-team-token: TEAM-TOKEN-001
 }
 ```
 
-> `isCorrect: null` → partido aún no tiene resultado.
-> `prediction: null` → el participante no predijo ese partido (ej. rondas TBD al momento de enviar).
+> `isCorrect: null` → el partido aún no tiene resultado registrado.
+> `homeTeam: null / awayTeam: null` → los equipos clasificados aún no han sido definidos por el organizador.
+> `prediction: null` → el participante no envió predicción para ese partido.
 
 **Errores:**
 | Código | Mensaje |
