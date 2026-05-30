@@ -6,14 +6,12 @@
 
 INSERT INTO hackathon_db.tb_team (nm_team, tx_token)
 VALUES
-  ('Equipo 1', 'TEAM-TOKEN-001'),
-  ('Equipo 2', 'TEAM-TOKEN-002'),
-  ('Equipo 3', 'TEAM-TOKEN-003'),
-  ('Equipo 4', 'TEAM-TOKEN-004'),
-  ('Equipo 5', 'TEAM-TOKEN-005'),
-  ('Equipo 6', 'TEAM-TOKEN-006'),
-  ('Equipo 7', 'TEAM-TOKEN-007'),
-  ('Equipo 8', 'TEAM-TOKEN-008');
+  ('SiGanamosEdwinBrindaAlmuerzo', 'TEAM-EDWIN-BRINDA'),
+  ('Tralala', 'TEAM-TRALALA-YR'),
+  ('Los tung tung sitos', 'TEAM-TUNG-TUNG'),
+  ('Muwigaras ', 'TEAM-MUWIGARA'),
+  ('Programing Girls', 'PROGRAMMING-GIRLS'),
+  ('Team Rocket', 'TEAM-ROCKET');
 
 -- Verificar
 SELECT id_team, nm_team, tx_token FROM hackathon_db.tb_team ORDER BY id_team;

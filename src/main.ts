@@ -13,12 +13,8 @@ async function bootstrap() {
 
   const port = Number(getEnv('APP_PORT', process.env.PORT ?? '3000'));
 
-  const corsOrigins = process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
-    : true;
-
   app.enableCors({
-    origin: corsOrigins,
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'x-team-token', 'x-admin-token'],
     credentials: false,
