@@ -4,22 +4,6 @@ API REST para el Cuarto Hackathon de Espacio Educa (2026). Permite gestionar equ
 
 **Stack:** NestJS · TypeScript · Fastify · TypeORM · PostgreSQL
 
----
-
-## ⚙️ Configuración
-
-```bash
-cp .env.example .env   # ajustar credenciales de BD
-npm install
-npm run start:dev
-```
-
-Con `DB_SYNCHRONIZE=true` las tablas se crean automáticamente al iniciar.
-
-**Base URL:** `http://localhost:3000`
-
----
-
 ## 🔐 Autenticación
 
 Todos los endpoints requieren el header:
