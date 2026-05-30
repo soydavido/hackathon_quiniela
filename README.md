@@ -320,7 +320,7 @@ x-team-token: TEAM-TOKEN-001
 **Response `200`:**
 ```json
 {
-  "participant": { "idParticipant": 1, "name": "Carlos Pérez" },
+  "participant": { "idParticipant": 1, "name": "Carlos Pérez", "photoUrl": "https://example.com/foto.jpg" },
   "submitted": true,
   "score": 3,
   "bracket": [
@@ -389,7 +389,7 @@ x-team-token: TEAM-TOKEN-001
 **Response `200`:**
 ```json
 {
-  "participant": { "idParticipant": 1, "name": "Carlos Pérez" },
+  "participant": { "idParticipant": 1, "name": "Carlos Pérez", "photoUrl": null },
   "submitted": true,
   "score": 6,
   "bracket": [
@@ -510,7 +510,7 @@ x-team-token: TEAM-TOKEN-001
 ```json
 [
   {
-    "participant": { "idParticipant": 1, "name": "Carlos Pérez" },
+    "participant": { "idParticipant": 1, "name": "Carlos Pérez", "photoUrl": "https://example.com/foto.jpg" },
     "submitted": true,
     "score": 7,
     "stats": {
@@ -571,9 +571,9 @@ x-team-token: TEAM-TOKEN-001
 **Response `200`:**
 ```json
 [
-  { "idParticipant": 1, "name": "Carlos Pérez", "score": 12, "submitted": true },
-  { "idParticipant": 2, "name": "María López", "score": 8, "submitted": true },
-  { "idParticipant": 3, "name": "Luis Gómez", "score": 0, "submitted": false }
+  { "idParticipant": 1, "name": "Carlos Pérez", "photoUrl": "https://example.com/foto.jpg", "score": 12, "submitted": true },
+  { "idParticipant": 2, "name": "María López", "photoUrl": null, "score": 8, "submitted": true },
+  { "idParticipant": 3, "name": "Luis Gómez", "photoUrl": null, "score": 0, "submitted": false }
 ]
 ```
 
@@ -590,8 +590,8 @@ x-team-token: TEAM-TOKEN-001
 **Response `200`:**
 ```json
 [
-  { "idParticipant": 5, "name": "Ana Martínez", "teamName": "Equipo 3", "score": 15, "submitted": true },
-  { "idParticipant": 1, "name": "Carlos Pérez", "teamName": "Equipo 1", "score": 12, "submitted": true }
+  { "idParticipant": 5, "name": "Ana Martínez", "photoUrl": "https://example.com/ana.jpg", "teamName": "Equipo 3", "score": 15, "submitted": true },
+  { "idParticipant": 1, "name": "Carlos Pérez", "photoUrl": null, "teamName": "Equipo 1", "score": 12, "submitted": true }
 ]
 ```
 
