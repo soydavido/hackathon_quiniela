@@ -60,36 +60,6 @@ Con `GET /quiniela/:participantId` el usuario puede ver su quiniela partido a pa
 
 ---
 
-### ⚽ Equipos de Fútbol
-
-#### `GET /football-teams`
-Lista todos los equipos de fútbol del torneo con nombre, código de país y bandera.
-
-**Headers:**
-```
-x-team-token: TEAM-TOKEN-001
-```
-
-**Response `200`:**
-```json
-[
-  {
-    "idFootballTeam": 1,
-    "name": "Argentina",
-    "countryCode": "AR",
-    "flagUrl": "https://flagcdn.com/w320/ar.png"
-  },
-  {
-    "idFootballTeam": 2,
-    "name": "Ecuador",
-    "countryCode": "EC",
-    "flagUrl": "https://flagcdn.com/w320/ec.png"
-  }
-]
-```
-
----
-
 ### 👥 Participantes
 
 #### `POST /participants`
@@ -163,41 +133,6 @@ x-team-token: TEAM-TOKEN-001
 
 ### 🗓️ Partidos
 
-#### `GET /matches`
-Lista plana de todos los partidos creados, ordenados por `matchOrder`.
-
-**Headers:**
-```
-x-team-token: TEAM-TOKEN-001
-```
-
-**Response `200`:**
-```json
-[
-  {
-    "idMatch": 1,
-    "matchOrder": 1,
-    "homeTeam": {
-      "idFootballTeam": 1,
-      "name": "Argentina",
-      "countryCode": "AR",
-      "flagUrl": "https://flagcdn.com/w320/ar.png"
-    },
-    "awayTeam": {
-      "idFootballTeam": 2,
-      "name": "Ecuador",
-      "countryCode": "EC",
-      "flagUrl": "https://flagcdn.com/w320/ec.png"
-    },
-    "matchDate": "2026-07-10T18:00:00.000Z",
-    "status": "pending",
-    "winner": null
-  }
-]
-```
-
----
-
 #### `GET /matches/bracket`
 Bracket completo del torneo con las 5 fases y los 16 partidos. Desde el inicio todos los partidos existen en el sistema — los de rondas posteriores son placeholders con `homeTeam: null` y `awayTeam: null` hasta que se conozcan los clasificados. Útil para renderizar el bracket gráfico.
 
@@ -266,7 +201,7 @@ La quiniela cubre los **16 partidos del bracket completo** (octavos hasta final)
 - **Octavos** (equipos definidos): `predictedWinnerId` debe ser `homeTeam` o `awayTeam` del partido.
 - **Cuartos en adelante** (placeholder sin equipos): `predictedWinnerId` acepta cualquier `idFootballTeam` de los 16 equipos del torneo.
 
-**Cómo obtener los `matchId`:** consulta `GET /matches/bracket` y usa el campo `idMatch` de cada partido. Los `idFootballTeam` se obtienen de `GET /football-teams`.
+**Cómo obtener los `matchId`:** consulta `GET /matches/bracket` y usa el campo `idMatch` de cada partido. Los `idFootballTeam` e `idMatch` se obtienen del mismo response del bracket.
 
 **Headers:**
 ```
@@ -300,7 +235,7 @@ x-team-token: TEAM-TOKEN-001
 
 > Los `matchId` son los `idMatch` reales que devuelve `GET /matches/bracket`. Los IDs del ejemplo asumen inserción en orden — siempre confirma los IDs reales antes de enviar.
 
-> Los `predictedWinnerId` del ejemplo son ilustrativos. Consulta `GET /football-teams` para ver los IDs reales de cada equipo.
+> Los `predictedWinnerId` del ejemplo son ilustrativos. Los IDs reales de cada equipo se obtienen del campo `idFootballTeam` que devuelve `GET /matches/bracket`.
 
 **Response `201`:**
 ```json
