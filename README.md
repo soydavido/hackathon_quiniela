@@ -34,14 +34,25 @@ x-team-token: <token-del-equipo>
 
 ## 🗺️ Flujo recomendado
 
-```
-1. POST /participants               → registrar tu participante con el token del equipo
-2. GET  /matches/bracket            → ver el bracket completo con los enfrentamientos
-3. POST /quiniela                   → registrar tu quiniela (una sola vez, no se puede modificar)
-4. GET  /quiniela/:participantId    → ver tu quiniela con predicciones y resultados
-5. GET  /leaderboard/token          → ranking de tu equipo
-6. GET  /leaderboard/general        → ranking global
-```
+### 1. Registrar participantes
+Con el token que el organizador entregó al equipo, llama a `POST /participants` una vez por cada integrante que se quiera registrar.
+
+### 2. Verificar estado de la quiniela
+Con `GET /participants` lista todos los integrantes del equipo. Cada uno incluye el campo `quinielaSubmitted`:
+- `false` → llevar al usuario al flujo de **crear quiniela** (paso 3)
+- `true` → llevar al usuario al flujo de **consultar quiniela** (paso 4)
+
+### 3. Crear la quiniela
+Consulta `GET /matches/bracket` para obtener todos los enfrentamientos del torneo (octavos → final). El usuario debe ir seleccionando el ganador de cada partido en la UI, acumulando las predicciones hasta completar los 16 partidos (campeón y tercer lugar incluidos). Una vez completa, envía todo con `POST /quiniela`. **Solo se puede enviar una vez.**
+
+### 4. Consultar la quiniela enviada
+Con `GET /quiniela/:participantId` el usuario puede ver su quiniela partido a partido. Para los partidos ya finalizados, la respuesta incluye si la predicción fue correcta (`isCorrect: true/false`). La UI debe mostrar tanto la predicción del usuario como el ganador real e indicar el acierto visualmente.
+
+### 5. Ver el ranking del equipo
+`GET /leaderboard/token` devuelve los participantes del equipo ordenados por puntaje. Los que no enviaron quiniela aparecen con `score: 0`.
+
+### 6. Ver el ranking global
+`GET /leaderboard/general` muestra todos los participantes de todos los equipos con su `teamName`, permitiendo que cada equipo se compare con los demás.
 
 ---
 
@@ -238,8 +249,9 @@ x-team-token: TEAM-TOKEN-001
 
 | Campo `status` | Significado |
 |----------------|-------------|
-| `pending` | Partido definido o placeholder, aún no jugado |
+| `pending` | Partido definido, aún no jugado |
 | `finished` | Partido jugado, resultado registrado |
+| `tbd` | Ronda no definida aún — equipos por determinar |
 
 ---
 
@@ -248,7 +260,7 @@ x-team-token: TEAM-TOKEN-001
 #### `POST /quiniela`
 Registra la quiniela completa de un participante. **Solo se puede enviar una vez — no puede modificarse después.**
 
-La quiniela cubre los **16 partidos del bracket completo** (octavos hasta final). Todos los partidos existen en el sistema desde el inicio — los de rondas posteriores son placeholders sin equipos definidos aún.
+La quiniela cubre los **16 partidos del bracket completo** (octavos hasta final). El usuario debe ir seleccionando el ganador de cada partido en la UI a medida que navega el bracket, acumulando las predicciones hasta indicar campeón y tercer lugar. Una vez completa, se envía todo en una sola llamada.
 
 **Reglas de validación por tipo de partido:**
 - **Octavos** (equipos definidos): `predictedWinnerId` debe ser `homeTeam` o `awayTeam` del partido.
@@ -310,7 +322,7 @@ x-team-token: TEAM-TOKEN-001
 ---
 
 #### `GET /quiniela/:participantId`
-Devuelve la quiniela del participante en formato bracket, con la predicción superpuesta en cada partido y el resultado de cada acierto.
+Devuelve la quiniela del participante en formato bracket, con la predicción superpuesta en cada partido y el resultado de cada acierto. La UI debe mostrar para cada partido finalizado tanto la predicción del usuario como el ganador real, e indicar visualmente si fue correcta (`isCorrect: true/false`) o si aún está pendiente (`isCorrect: null`).
 
 **Headers:**
 ```
@@ -501,7 +513,7 @@ x-team-token: TEAM-TOKEN-001
 ### 🏅 Leaderboard
 
 #### `GET /leaderboard/token`
-Ranking de los participantes del equipo identificado por el token, ordenado de mayor a menor puntaje.
+Ranking de los participantes del equipo identificado por el token, ordenado de mayor a menor puntaje. Los participantes que no han enviado quiniela aparecen con `score: 0`. La UI debe mostrar esta lista completa incluyendo a quienes aún no participaron.
 
 **Headers:**
 ```
@@ -520,7 +532,7 @@ x-team-token: TEAM-TOKEN-001
 ---
 
 #### `GET /leaderboard/general`
-Ranking global con todos los participantes de todos los equipos.
+Ranking global con todos los participantes de todos los equipos, ordenado por puntaje. La respuesta incluye `teamName` para identificar a qué equipo pertenece cada participante. La UI debe mostrar todos los registros sin filtrar, permitiendo que cada equipo se compare con los demás.
 
 **Headers:**
 ```
