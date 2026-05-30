@@ -92,15 +92,19 @@ x-team-token: TEAM-TOKEN-001
 **Request body:**
 ```json
 {
-  "name": "Carlos Pérez"
+  "name": "Carlos Pérez",
+  "photoUrl": "https://example.com/foto.jpg"
 }
 ```
+
+> `photoUrl` es opcional. Si se envía, debe ser una URL válida de hasta 500 caracteres.
 
 **Response `201`:**
 ```json
 {
   "idParticipant": 1,
   "name": "Carlos Pérez",
+  "photoUrl": "https://example.com/foto.jpg",
   "teamId": 1,
   "createdAt": "2026-05-30T10:00:00.000Z"
 }
@@ -128,6 +132,7 @@ x-team-token: TEAM-TOKEN-001
   {
     "idParticipant": 1,
     "name": "Carlos Pérez",
+    "photoUrl": "https://example.com/foto.jpg",
     "teamId": 1,
     "quinielaSubmitted": true,
     "createdAt": "2026-05-30T10:00:00.000Z"
@@ -135,6 +140,7 @@ x-team-token: TEAM-TOKEN-001
   {
     "idParticipant": 2,
     "name": "María López",
+    "photoUrl": null,
     "teamId": 1,
     "quinielaSubmitted": false,
     "createdAt": "2026-05-30T10:05:00.000Z"

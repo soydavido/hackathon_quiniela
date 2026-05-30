@@ -32,6 +32,7 @@ export class LeaderboardService {
         return {
           idParticipant: p.idParticipant,
           name: p.name,
+          photoUrl: p.photoUrl ?? null,
           score: q?.score ?? 0,
           submitted: q?.submitted ?? false,
         };
@@ -48,6 +49,7 @@ export class LeaderboardService {
       .map((q) => ({
         idParticipant: q.participantId,
         name: q.participant?.name,
+        photoUrl: q.participant?.photoUrl ?? null,
         teamName: q.participant?.team?.name,
         score: q.score,
         submitted: q.submitted,

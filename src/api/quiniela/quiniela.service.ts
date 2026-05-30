@@ -113,7 +113,7 @@ export class QuinielaService {
     });
 
     return {
-      participant: { idParticipant: 1, name: 'Carlos Pérez' },
+      participant: { idParticipant: 1, name: 'Carlos Pérez', photoUrl: null },
       submitted: true,
       score: 6,
       bracket: [
@@ -229,7 +229,7 @@ export class QuinielaService {
     });
 
     return {
-      participant: { idParticipant: participant.idParticipant, name: participant.name },
+      participant: { idParticipant: participant.idParticipant, name: participant.name, photoUrl: participant.photoUrl ?? null },
       submitted: quiniela.submitted,
       score: quiniela.score,
       bracket,
@@ -275,6 +275,7 @@ export class QuinielaService {
       participant: {
         idParticipant: participant?.idParticipant,
         name: participant?.name,
+        photoUrl: participant?.photoUrl ?? null,
       },
       submitted: q.submitted,
       score: q.score,
