@@ -7,7 +7,7 @@ import { MatchEntity } from '../../database/models/match.entity';
 import { ParticipantEntity } from '../../database/models/participant.entity';
 import { PredictionEntity } from '../../database/models/prediction.entity';
 import { QuinielaEntity } from '../../database/models/quiniela.entity';
-import { formatMatchSlot, formatTeam, STAGE_ORDER, STAGE_SLOTS } from '../matches/matches.service';
+import { formatMatchSlot, formatTeam, STAGE_ORDER, STAGE_POINTS, STAGE_SLOTS } from '../matches/matches.service';
 import { SaveQuinielaDto } from './dto/submit-quiniela.dto';
 
 @Injectable()
@@ -231,7 +231,12 @@ export class QuinielaService {
     return {
       participant: { idParticipant: participant.idParticipant, name: participant.name, photoUrl: participant.photoUrl ?? null },
       submitted: quiniela.submitted,
-      score: quiniela.score,
+      score: allMatches.reduce((sum, m) => {
+        if (m.status !== 'finished' || m.winnerId == null) return sum;
+        const pred = predMap.get(Number(m.idMatch));
+        if (!pred) return sum;
+        return sum + (Number(pred.predictedWinnerId) === Number(m.winnerId) ? (STAGE_POINTS[m.stage] ?? 1) : 0);
+      }, 0),
       bracket,
     };
   }

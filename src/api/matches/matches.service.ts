@@ -14,6 +14,13 @@ export const STAGE_SLOTS: Record<string, number> = {
   tercer_lugar: 1,
   final: 1,
 };
+export const STAGE_POINTS: Record<string, number> = {
+  octavos: 1,
+  cuartos: 2,
+  semifinal: 3,
+  tercer_lugar: 2,
+  final: 4,
+};
 
 export function formatTeam(team: FootballTeamEntity | null | undefined) {
   if (!team) return null;

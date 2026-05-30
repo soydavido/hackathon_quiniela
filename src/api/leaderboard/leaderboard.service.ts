@@ -3,7 +3,18 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
 import { getEnv } from '../../common/utils/env';
 import { ParticipantEntity } from '../../database/models/participant.entity';
+import { PredictionEntity } from '../../database/models/prediction.entity';
 import { QuinielaEntity } from '../../database/models/quiniela.entity';
+import { STAGE_POINTS } from '../matches/matches.service';
+
+function computeScore(predictions: PredictionEntity[]): number {
+  return predictions.reduce((sum, pred) => {
+    const match = pred.match;
+    if (!match || match.status !== 'finished' || match.winnerId == null) return sum;
+    const correct = Number(pred.predictedWinnerId) === Number(match.winnerId);
+    return sum + (correct ? (STAGE_POINTS[match.stage] ?? 1) : 0);
+  }, 0);
+}
 
 @Injectable()
 export class LeaderboardService {
@@ -22,6 +33,7 @@ export class LeaderboardService {
     const ids = participants.map((p) => p.idParticipant);
     const quinielas = await this.quinielaRepo.find({
       where: { participantId: In(ids) } as any,
+      relations: ['predictions', 'predictions.match'],
     });
 
     const quinielaMap = new Map(quinielas.map((q) => [Number(q.participantId), q]));
@@ -33,7 +45,7 @@ export class LeaderboardService {
           idParticipant: p.idParticipant,
           name: p.name,
           photoUrl: p.photoUrl ?? null,
-          score: q?.score ?? 0,
+          score: q ? computeScore(q.predictions ?? []) : 0,
           submitted: q?.submitted ?? false,
         };
       })
@@ -42,7 +54,7 @@ export class LeaderboardService {
 
   async getGeneral(): Promise<any[]> {
     const quinielas = await this.quinielaRepo.find({
-      relations: ['participant', 'participant.team'],
+      relations: ['participant', 'participant.team', 'predictions', 'predictions.match'],
     });
 
     return quinielas
@@ -51,7 +63,7 @@ export class LeaderboardService {
         name: q.participant?.name,
         photoUrl: q.participant?.photoUrl ?? null,
         teamName: q.participant?.team?.name,
-        score: q.score,
+        score: computeScore(q.predictions ?? []),
         submitted: q.submitted,
       }))
       .sort((a, b) => b.score - a.score);
