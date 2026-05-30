@@ -4,6 +4,12 @@ API REST para el Cuarto Hackathon de Espacio Educa (2026). Permite gestionar equ
 
 **Stack:** NestJS · TypeScript · Fastify · TypeORM · PostgreSQL
 
+## 🌍 Link de la API
+
+```
+https://hackathon-quiniela.onrender.com
+```
+
 ## 🔐 Autenticación
 
 Todos los endpoints requieren el header:
