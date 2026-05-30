@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Headers, Logger, Param, Patch, Post, UnauthorizedException } from '@nestjs/common';
 import { getEnv } from '../../common/utils/env';
+import { SkipAuth } from '../../common/decorators/skip-auth.decorator';
 import { AdminService } from './admin.service';
 import { CreateFootballTeamDto } from './dto/create-football-team.dto';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { SetResultDto } from './dto/set-result.dto';
 
+@SkipAuth()
 @Controller('admin')
 export class AdminController {
   protected readonly logger = new Logger(AdminController.name);

@@ -44,8 +44,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     if (typeof response.code === 'function') {
       response.code(status).send(responseBody);
+    } else if (typeof response.status === 'function') {
+      response.status(status);
+      response.setHeader('Content-Type', 'application/json');
+      response.end(JSON.stringify(responseBody));
     } else {
-      response.status(status).json(responseBody);
+      response.statusCode = status;
+      response.setHeader('Content-Type', 'application/json');
+      response.end(JSON.stringify(responseBody));
     }
   }
 

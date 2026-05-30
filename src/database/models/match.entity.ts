@@ -13,19 +13,19 @@ export class MatchEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 50, name: 'tx_stage' })
   stage!: MatchStage;
 
-  @Column({ type: 'bigint', name: 'id_home_team' })
-  homeTeamId!: number;
+  @Column({ type: 'bigint', name: 'id_home_team', nullable: true })
+  homeTeamId?: number;
 
-  @ManyToOne(() => FootballTeamEntity, { eager: false })
+  @ManyToOne(() => FootballTeamEntity, { eager: false, nullable: true })
   @JoinColumn({ name: 'id_home_team' })
-  homeTeam!: FootballTeamEntity;
+  homeTeam?: FootballTeamEntity;
 
-  @Column({ type: 'bigint', name: 'id_away_team' })
-  awayTeamId!: number;
+  @Column({ type: 'bigint', name: 'id_away_team', nullable: true })
+  awayTeamId?: number;
 
-  @ManyToOne(() => FootballTeamEntity, { eager: false })
+  @ManyToOne(() => FootballTeamEntity, { eager: false, nullable: true })
   @JoinColumn({ name: 'id_away_team' })
-  awayTeam!: FootballTeamEntity;
+  awayTeam?: FootballTeamEntity;
 
   @Column({ type: 'varchar', length: 20, name: 'tx_status', default: 'pending' })
   status!: MatchStatus;

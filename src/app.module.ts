@@ -1,5 +1,5 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { Module } from '@nestjs/common';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AdminModule } from './api/admin/admin.module';
 import { FootballTeamsModule } from './api/football-teams/football-teams.module';
@@ -8,8 +8,8 @@ import { MatchesModule } from './api/matches/matches.module';
 import { ParticipantsModule } from './api/participants/participants.module';
 import { QuinielaModule } from './api/quiniela/quiniela.module';
 import { GlobalExceptionFilter } from './common/errors/global-exception.filter';
+import { TeamAuthGuard } from './common/guards/team-auth.guard';
 import { ResponseLoggingInterceptor } from './common/interceptors/response-logging.interceptor';
-import { TeamFilterMiddleware } from './common/middlewares/team-filter.middleware';
 import { DatabaseModule } from './common/modules/database.module';
 import { LoggerModule } from './common/modules/logger.module';
 import { getEnv } from './common/utils/env';
@@ -31,22 +31,10 @@ import { TeamEntity } from './database/models/team.entity';
     AdminModule,
   ],
   providers: [
-    TeamFilterMiddleware,
     GlobalExceptionFilter,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ResponseLoggingInterceptor,
-    },
+    TeamAuthGuard,
+    { provide: APP_GUARD, useClass: TeamAuthGuard },
+    { provide: APP_INTERCEPTOR, useClass: ResponseLoggingInterceptor },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(TeamFilterMiddleware)
-      .exclude(
-        { path: 'admin/(.*)', method: RequestMethod.ALL },
-        { path: 'admin', method: RequestMethod.ALL },
-      )
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
-  }
-}
+export class AppModule {}

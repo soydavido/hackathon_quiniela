@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, UnauthorizedException, HttpException } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TeamEntity } from '../../database/models/team.entity';
@@ -23,21 +23,27 @@ export class TeamFilterMiddleware implements NestMiddleware {
     const raw = req.headers['x-team-token'] as string | undefined;
     const token = Array.isArray(raw) ? raw[0] : raw;
 
-    try {
-      if (!token) {
-        throw new UnauthorizedException('Se requiere el header x-team-token.');
-      }
+    const sendError = (code: number, message: string) => {
+      res.statusCode = code;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ statusCode: code, message, timestamp: new Date().toISOString(), path: req.url }));
+    };
 
+    if (!token) {
+      return sendError(401, 'Se requiere el header x-team-token.');
+    }
+
+    try {
       const team = await this.teamRepo.findOne({ where: { token } as any });
       if (!team) {
-        throw new UnauthorizedException('Token de equipo no válido.');
+        return sendError(401, 'Token de equipo no válido.');
       }
 
       (req as any).team = { idTeam: team.idTeam, name: team.name, token: team.token };
       return next();
     } catch (err) {
-      if (err instanceof HttpException) throw err;
-      throw new HttpException('Error al validar el token del equipo.', 500);
+      this.logger.error('Error validando token de equipo', err);
+      return sendError(500, 'Error al validar el token del equipo.');
     }
   }
 }

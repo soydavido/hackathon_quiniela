@@ -40,7 +40,6 @@ export class ParticipantsService extends BaseService<ParticipantEntity> {
         idParticipant: p.idParticipant,
         name: p.name,
         teamId: p.teamId,
-        hasQuiniela: !!q,
         quinielaSubmitted: q?.submitted ?? false,
         createdAt: p.createdAt,
       };

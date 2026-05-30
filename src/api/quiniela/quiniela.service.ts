@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
 import { getEnv } from '../../common/utils/env';
+import { FootballTeamEntity } from '../../database/models/football-team.entity';
 import { MatchEntity } from '../../database/models/match.entity';
 import { ParticipantEntity } from '../../database/models/participant.entity';
 import { PredictionEntity } from '../../database/models/prediction.entity';
@@ -15,12 +16,14 @@ export class QuinielaService {
   private readonly predictionRepo: Repository<PredictionEntity>;
   private readonly participantRepo: Repository<ParticipantEntity>;
   private readonly matchRepo: Repository<MatchEntity>;
+  private readonly footballTeamRepo: Repository<FootballTeamEntity>;
 
   constructor(@InjectDataSource(getEnv('DB_NAME')) private readonly ds: DataSource) {
     this.quinielaRepo = ds.getRepository(QuinielaEntity);
     this.predictionRepo = ds.getRepository(PredictionEntity);
     this.participantRepo = ds.getRepository(ParticipantEntity);
     this.matchRepo = ds.getRepository(MatchEntity);
+    this.footballTeamRepo = ds.getRepository(FootballTeamEntity);
   }
 
   async save(teamId: number, dto: SaveQuinielaDto): Promise<{ message: string }> {
@@ -33,19 +36,33 @@ export class QuinielaService {
     if (existing) throw new BadRequestException('Este participante ya registró su quiniela y no puede modificarla.');
 
     const matchIds = dto.predictions.map((p) => p.matchId);
-    const matches = await this.matchRepo.find({ where: { idMatch: In(matchIds) } });
+    const [matches, allTeams] = await Promise.all([
+      this.matchRepo.find({ where: { idMatch: In(matchIds) } }),
+      this.footballTeamRepo.find({ select: ['idFootballTeam'] as any }),
+    ]);
     const matchMap = new Map(matches.map((m) => [Number(m.idMatch), m]));
+    const validTeamIds = new Set(allTeams.map((t) => Number(t.idFootballTeam)));
 
     for (const pred of dto.predictions) {
       const match = matchMap.get(pred.matchId);
       if (!match) throw new BadRequestException(`El partido con id ${pred.matchId} no existe.`);
       if (match.status === 'finished') throw new BadRequestException(`El partido con id ${pred.matchId} ya finalizó y no puede predecirse.`);
 
-      const validIds = [Number(match.homeTeamId), Number(match.awayTeamId)];
-      if (!validIds.includes(pred.predictedWinnerId)) {
-        throw new BadRequestException(
-          `El equipo con id ${pred.predictedWinnerId} no juega en el partido ${pred.matchId}. Equipos válidos: ${validIds.join(', ')}.`,
-        );
+      if (match.homeTeamId && match.awayTeamId) {
+        // Partido con equipos definidos: solo se acepta uno de los dos
+        const validIds = [Number(match.homeTeamId), Number(match.awayTeamId)];
+        if (!validIds.includes(pred.predictedWinnerId)) {
+          throw new BadRequestException(
+            `El equipo con id ${pred.predictedWinnerId} no juega en el partido ${pred.matchId}. Equipos válidos: ${validIds.join(', ')}.`,
+          );
+        }
+      } else {
+        // Partido placeholder (equipos aún por definir): acepta cualquier equipo del torneo
+        if (!validTeamIds.has(pred.predictedWinnerId)) {
+          throw new BadRequestException(
+            `El equipo con id ${pred.predictedWinnerId} no existe en el torneo.`,
+          );
+        }
       }
     }
 
