@@ -22,34 +22,25 @@ Con `DB_SYNCHRONIZE=true` las tablas se crean automáticamente al iniciar.
 
 ## 🔐 Autenticación
 
-Todos los endpoints (excepto `/admin/*`) requieren el header:
+Todos los endpoints requieren el header:
 
 ```
 x-team-token: <token-del-equipo>
 ```
 
-> Los tokens de equipo son registrados directamente por los organizadores en la base de datos.
-
-Los endpoints de administración requieren:
-
-```
-x-admin-token: <valor-de-ADMIN_SECRET-en-.env>
-```
+> El token de tu equipo te lo proporciona el organizador del hackathon.
 
 ---
 
 ## 🗺️ Flujo recomendado
 
 ```
-1. [Admin] POST /admin/football-teams              → cargar equipos de fútbol (una vez)
-2. [Admin] POST /admin/matches                     → cargar partidos de octavos
-3. [App]   POST /participants                      → registrar participante con el token
-4. [App]   GET  /matches/bracket                   → ver bracket completo (octavos + TBD)
-5. [App]   POST /quiniela                          → registrar quiniela (una sola vez, inmutable)
-6. [App]   GET  /quiniela/:participantId           → ver quiniela con predicciones y resultados
-7. [Admin] PATCH /admin/matches/:id/result         → registrar resultado (calcula puntajes)
-8. [App]   GET  /leaderboard/token                 → ranking del equipo
-9. [App]   GET  /leaderboard/general               → ranking global
+1. POST /participants               → registrar tu participante con el token del equipo
+2. GET  /matches/bracket            → ver el bracket completo con los enfrentamientos
+3. POST /quiniela                   → registrar tu quiniela (una sola vez, no se puede modificar)
+4. GET  /quiniela/:participantId    → ver tu quiniela con predicciones y resultados
+5. GET  /leaderboard/token          → ranking de tu equipo
+6. GET  /leaderboard/general        → ranking global
 ```
 
 ---
@@ -457,117 +448,6 @@ x-team-token: TEAM-TOKEN-001
 
 ---
 
-### 🛠️ Admin
-
-Todos los endpoints de admin requieren `x-admin-token`. Los tokens de equipo (`tb_team`) se registran directamente en BD con el seed `00_teams.sql`.
-
----
-
-#### `POST /admin/football-teams`
-Crea un equipo de fútbol del torneo.
-
-**Request body:**
-```json
-{
-  "name": "Argentina",
-  "countryCode": "AR",
-  "flagUrl": "https://flagcdn.com/w320/ar.png"
-}
-```
-
-**Response `201`:**
-```json
-{
-  "idFootballTeam": 1,
-  "name": "Argentina",
-  "countryCode": "AR",
-  "flagUrl": "https://flagcdn.com/w320/ar.png"
-}
-```
-
----
-
-#### `GET /admin/football-teams`
-Lista todos los equipos de fútbol con sus IDs. Útil para armar los partidos.
-
-**Response `200`:** misma estructura que `GET /football-teams`.
-
----
-
-#### `POST /admin/matches`
-Crea un partido del torneo.
-
-**Request body:**
-```json
-{
-  "stage": "octavos",
-  "homeTeamId": 1,
-  "awayTeamId": 2,
-  "matchDate": "2026-07-10T18:00:00.000Z",
-  "matchOrder": 1
-}
-```
-
-| Campo | Tipo | Requerido | Descripción |
-|-------|------|-----------|-------------|
-| `stage` | string | ✅ | `octavos` · `cuartos` · `semifinal` · `tercer_lugar` · `final` |
-| `homeTeamId` | number | ✅ | ID del equipo local (`idFootballTeam`) |
-| `awayTeamId` | number | ✅ | ID del equipo visitante (`idFootballTeam`) |
-| `matchDate` | ISO 8601 | ❌ | Fecha y hora del partido |
-| `matchOrder` | number | ❌ | Orden para la UI (1–16) |
-
-**Response `201`:**
-```json
-{
-  "idMatch": 1,
-  "matchOrder": 1,
-  "homeTeam": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "AR", "flagUrl": "..." },
-  "awayTeam": { "idFootballTeam": 2, "name": "Ecuador", "countryCode": "EC", "flagUrl": "..." },
-  "matchDate": "2026-07-10T18:00:00.000Z",
-  "status": "pending",
-  "winner": null
-}
-```
-
----
-
-#### `GET /admin/matches`
-Lista todos los partidos.
-
-**Response `200`:** misma estructura que `GET /matches`.
-
----
-
-#### `PATCH /admin/matches/:id/result`
-Registra el resultado de un partido. El backend evalúa automáticamente todas las predicciones y suma los puntos correspondientes.
-
-**Request body:**
-```json
-{
-  "winnerId": 1
-}
-```
-
-> `winnerId` debe ser el `idFootballTeam` de `homeTeam` o `awayTeam` del partido.
-
-**Response `200`:**
-```json
-{
-  "message": "Resultado registrado: Argentina vs Ecuador — ganador: Argentina",
-  "pointsAwarded": 1
-}
-```
-
-**Errores:**
-| Código | Mensaje |
-|--------|---------|
-| `400` | `"Este partido ya tiene un resultado registrado."` |
-| `400` | `"El equipo con id 99 no juega en este partido."` |
-| `404` | `"Partido con id 99 no encontrado."` |
-| `401` | `"Token de administrador inválido."` |
-
----
-
 ## 🎯 Sistema de puntaje
 
 El puntaje se calcula automáticamente cuando el admin registra el resultado de un partido.
@@ -579,20 +459,6 @@ El puntaje se calcula automáticamente cuando el admin registra el resultado de 
 | 🔥 Semifinal | 3 pts |
 | 🥉 Tercer lugar | 2 pts |
 | 🏆 Final | 4 pts |
-
----
-
-## 🗄️ Modelo de datos
-
-```
-tb_football_team → equipos de fútbol del torneo (nombre, código país, bandera)
-tb_team          → equipos del hackathon (token único, registrado por organizadores)
-tb_participant   → participantes por equipo (quienes llenan quinielas)
-tb_match         → partidos del torneo (FK a tb_football_team para home/away/winner)
-tb_quiniela      → quiniela por participante (submitted=true al registrar, score acumulado)
-tb_prediction    → predicción por partido por quiniela (isCorrect calculado al registrar resultado)
-request_logs     → log de todas las peticiones entrantes y salientes
-```
 
 ---
 
