@@ -10,6 +10,9 @@ export class ParticipantEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 100, name: 'nm_participant' })
   name!: string;
 
+  @Column({ type: 'varchar', length: 500, name: 'tx_photo_url', nullable: true })
+  photoUrl?: string;
+
   @Column({ type: 'bigint', name: 'id_team' })
   teamId!: number;
 

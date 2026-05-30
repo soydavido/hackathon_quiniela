@@ -260,22 +260,22 @@ x-team-token: TEAM-TOKEN-001
 {
   "participantId": 1,
   "predictions": [
-    { "matchId": 1,  "predictedWinnerId": 1  },
+    { "matchId": 1,  "predictedWinnerId": 2  },
     { "matchId": 2,  "predictedWinnerId": 3  },
     { "matchId": 3,  "predictedWinnerId": 5  },
-    { "matchId": 4,  "predictedWinnerId": 7  },
-    { "matchId": 5,  "predictedWinnerId": 9  },
+    { "matchId": 4,  "predictedWinnerId": 8  },
+    { "matchId": 5,  "predictedWinnerId": 10 },
     { "matchId": 6,  "predictedWinnerId": 11 },
-    { "matchId": 7,  "predictedWinnerId": 14 },
+    { "matchId": 7,  "predictedWinnerId": 13 },
     { "matchId": 8,  "predictedWinnerId": 15 },
-    { "matchId": 9,  "predictedWinnerId": 1  },
-    { "matchId": 10, "predictedWinnerId": 7  },
-    { "matchId": 11, "predictedWinnerId": 11 },
-    { "matchId": 12, "predictedWinnerId": 15 },
-    { "matchId": 13, "predictedWinnerId": 1  },
-    { "matchId": 14, "predictedWinnerId": 15 },
-    { "matchId": 15, "predictedWinnerId": 11 },
-    { "matchId": 16, "predictedWinnerId": 1  }
+    { "matchId": 9,  "predictedWinnerId": 3  },
+    { "matchId": 10, "predictedWinnerId": 5  },
+    { "matchId": 11, "predictedWinnerId": 9  },
+    { "matchId": 12, "predictedWinnerId": 13 },
+    { "matchId": 13, "predictedWinnerId": 5  },
+    { "matchId": 14, "predictedWinnerId": 9  },
+    { "matchId": 15, "predictedWinnerId": 3  },
+    { "matchId": 16, "predictedWinnerId": 9  }
   ]
 }
 ```

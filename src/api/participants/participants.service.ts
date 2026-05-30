@@ -19,7 +19,7 @@ export class ParticipantsService extends BaseService<ParticipantEntity> {
   async createForTeam(teamId: number, dto: CreateParticipantDto): Promise<ParticipantEntity> {
     const existing = await this.repository.findOne({ where: { teamId, name: dto.name } as any });
     if (existing) throw new BadRequestException(`Ya existe un participante con el nombre "${dto.name}" en este equipo.`);
-    return this.create({ name: dto.name, teamId });
+    return this.create({ name: dto.name, teamId, photoUrl: dto.photoUrl });
   }
 
   async listByTeam(teamId: number): Promise<any[]> {
@@ -39,6 +39,7 @@ export class ParticipantsService extends BaseService<ParticipantEntity> {
       return {
         idParticipant: p.idParticipant,
         name: p.name,
+        photoUrl: p.photoUrl ?? null,
         teamId: p.teamId,
         quinielaSubmitted: q?.submitted ?? false,
         createdAt: p.createdAt,

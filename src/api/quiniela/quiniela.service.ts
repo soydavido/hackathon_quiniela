@@ -209,13 +209,18 @@ export class QuinielaService {
         }
         const m = matches[i];
         const pred = predMap.get(Number(m.idMatch)) ?? null;
+        const isCorrect = pred
+          ? m.status === 'finished' && m.winnerId != null
+            ? Number(pred.predictedWinnerId) === Number(m.winnerId)
+            : (pred.isCorrect ?? null)
+          : null;
         result.push({
           ...formatMatchSlot(m),
           prediction: pred
             ? {
                 idPrediction: pred.idPrediction,
                 predictedWinner: formatTeam(pred.predictedWinner),
-                isCorrect: pred.isCorrect ?? null,
+                isCorrect,
               }
             : null,
         });
