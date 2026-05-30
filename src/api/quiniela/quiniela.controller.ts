@@ -13,6 +13,11 @@ export class QuinielaController {
     return this.quinielaService.save(req.team.idTeam, dto);
   }
 
+  @Get('mock')
+  async mock() {
+    return this.quinielaService.getMock();
+  }
+
   // Resultados de todas las quinielas del equipo (token)
   @Get('results')
   async resultsByToken(@Req() req: any) {

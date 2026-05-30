@@ -372,6 +372,126 @@ x-team-token: TEAM-TOKEN-001
 
 ---
 
+#### `GET /quiniela/mock`
+Devuelve una quiniela de ejemplo con data completa para probar la interfaz gráfica sin necesidad de tener datos reales en la base de datos. No requiere `participantId` ni datos en BD.
+
+**Headers:**
+```
+x-team-token: TEAM-TOKEN-001
+```
+
+**Response `200`:**
+```json
+{
+  "participant": { "idParticipant": 1, "name": "Carlos Pérez" },
+  "submitted": true,
+  "score": 6,
+  "bracket": [
+    {
+      "stage": "octavos",
+      "matches": [
+        {
+          "idMatch": 1, "matchOrder": 1,
+          "homeTeam": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "ar", "flagUrl": "https://flagcdn.com/w320/ar.png" },
+          "awayTeam": { "idFootballTeam": 2, "name": "Ecuador", "countryCode": "ec", "flagUrl": "https://flagcdn.com/w320/ec.png" },
+          "matchDate": "2026-07-10T18:00:00.000Z",
+          "status": "finished",
+          "winner": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "ar", "flagUrl": "https://flagcdn.com/w320/ar.png" },
+          "prediction": { "idPrediction": 10, "predictedWinner": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "ar", "flagUrl": "https://flagcdn.com/w320/ar.png" }, "isCorrect": true }
+        },
+        {
+          "idMatch": 3, "matchOrder": 3,
+          "homeTeam": { "idFootballTeam": 5, "name": "España", "countryCode": "es", "flagUrl": "https://flagcdn.com/w320/es.png" },
+          "awayTeam": { "idFootballTeam": 6, "name": "Marruecos", "countryCode": "ma", "flagUrl": "https://flagcdn.com/w320/ma.png" },
+          "matchDate": "2026-07-11T18:00:00.000Z",
+          "status": "finished",
+          "winner": { "idFootballTeam": 5, "name": "España", "countryCode": "es", "flagUrl": "https://flagcdn.com/w320/es.png" },
+          "prediction": { "idPrediction": 30, "predictedWinner": { "idFootballTeam": 6, "name": "Marruecos", "countryCode": "ma", "flagUrl": "https://flagcdn.com/w320/ma.png" }, "isCorrect": false }
+        },
+        {
+          "idMatch": 5, "matchOrder": 5,
+          "homeTeam": { "idFootballTeam": 9, "name": "Alemania", "countryCode": "de", "flagUrl": "https://flagcdn.com/w320/de.png" },
+          "awayTeam": { "idFootballTeam": 10, "name": "Suiza", "countryCode": "ch", "flagUrl": "https://flagcdn.com/w320/ch.png" },
+          "matchDate": "2026-07-12T18:00:00.000Z",
+          "status": "finished",
+          "winner": { "idFootballTeam": 9, "name": "Alemania", "countryCode": "de", "flagUrl": "https://flagcdn.com/w320/de.png" },
+          "prediction": { "idPrediction": 50, "predictedWinner": { "idFootballTeam": 9, "name": "Alemania", "countryCode": "de", "flagUrl": "https://flagcdn.com/w320/de.png" }, "isCorrect": true }
+        }
+      ]
+    },
+    {
+      "stage": "cuartos",
+      "matches": [
+        {
+          "idMatch": 9, "matchOrder": 9,
+          "homeTeam": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "ar", "flagUrl": "https://flagcdn.com/w320/ar.png" },
+          "awayTeam": { "idFootballTeam": 3, "name": "Brasil", "countryCode": "br", "flagUrl": "https://flagcdn.com/w320/br.png" },
+          "matchDate": "2026-07-17T18:00:00.000Z",
+          "status": "finished",
+          "winner": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "ar", "flagUrl": "https://flagcdn.com/w320/ar.png" },
+          "prediction": { "idPrediction": 90, "predictedWinner": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "ar", "flagUrl": "https://flagcdn.com/w320/ar.png" }, "isCorrect": true }
+        },
+        {
+          "idMatch": 12, "matchOrder": 12,
+          "homeTeam": { "idFootballTeam": 14, "name": "Colombia", "countryCode": "co", "flagUrl": "https://flagcdn.com/w320/co.png" },
+          "awayTeam": { "idFootballTeam": 15, "name": "Países Bajos", "countryCode": "nl", "flagUrl": "https://flagcdn.com/w320/nl.png" },
+          "matchDate": "2026-07-18T22:00:00.000Z",
+          "status": "pending",
+          "winner": null,
+          "prediction": { "idPrediction": 120, "predictedWinner": { "idFootballTeam": 15, "name": "Países Bajos", "countryCode": "nl", "flagUrl": "https://flagcdn.com/w320/nl.png" }, "isCorrect": null }
+        }
+      ]
+    },
+    {
+      "stage": "semifinal",
+      "matches": [
+        {
+          "idMatch": 13, "matchOrder": 13,
+          "homeTeam": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "ar", "flagUrl": "https://flagcdn.com/w320/ar.png" },
+          "awayTeam": { "idFootballTeam": 7, "name": "Francia", "countryCode": "fr", "flagUrl": "https://flagcdn.com/w320/fr.png" },
+          "matchDate": "2026-07-21T22:00:00.000Z",
+          "status": "pending",
+          "winner": null,
+          "prediction": { "idPrediction": 130, "predictedWinner": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "ar", "flagUrl": "https://flagcdn.com/w320/ar.png" }, "isCorrect": null }
+        }
+      ]
+    },
+    {
+      "stage": "tercer_lugar",
+      "matches": [
+        {
+          "idMatch": 15, "matchOrder": 15,
+          "homeTeam": { "idFootballTeam": 7, "name": "Francia", "countryCode": "fr", "flagUrl": "https://flagcdn.com/w320/fr.png" },
+          "awayTeam": { "idFootballTeam": 11, "name": "Portugal", "countryCode": "pt", "flagUrl": "https://flagcdn.com/w320/pt.png" },
+          "matchDate": "2026-07-25T18:00:00.000Z",
+          "status": "pending",
+          "winner": null,
+          "prediction": { "idPrediction": 150, "predictedWinner": { "idFootballTeam": 11, "name": "Portugal", "countryCode": "pt", "flagUrl": "https://flagcdn.com/w320/pt.png" }, "isCorrect": null }
+        }
+      ]
+    },
+    {
+      "stage": "final",
+      "matches": [
+        {
+          "idMatch": 16, "matchOrder": 16,
+          "homeTeam": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "ar", "flagUrl": "https://flagcdn.com/w320/ar.png" },
+          "awayTeam": { "idFootballTeam": 15, "name": "Países Bajos", "countryCode": "nl", "flagUrl": "https://flagcdn.com/w320/nl.png" },
+          "matchDate": "2026-07-26T22:00:00.000Z",
+          "status": "pending",
+          "winner": null,
+          "prediction": { "idPrediction": 160, "predictedWinner": { "idFootballTeam": 1, "name": "Argentina", "countryCode": "ar", "flagUrl": "https://flagcdn.com/w320/ar.png" }, "isCorrect": null }
+        }
+      ]
+    }
+  ]
+}
+```
+
+> El response completo incluye los 16 partidos. Se muestran aquí los más representativos de cada estado posible.
+
+---
+
 #### `GET /quiniela/results`
 Resultados y estadísticas de todas las quinielas del equipo (token).
 

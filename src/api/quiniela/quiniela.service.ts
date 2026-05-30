@@ -82,6 +82,86 @@ export class QuinielaService {
     return { message: 'Quiniela registrada exitosamente.' };
   }
 
+  getMock(): any {
+    const t = (id: number, name: string, code: string) => ({
+      idFootballTeam: id, name, countryCode: code,
+      flagUrl: `https://flagcdn.com/w320/${code.toLowerCase()}.png`,
+    });
+
+    const ARG = t(1,  'Argentina',     'ar');
+    const ECU = t(2,  'Ecuador',       'ec');
+    const BRA = t(3,  'Brasil',        'br');
+    const URU = t(4,  'Uruguay',       'uy');
+    const ESP = t(5,  'España',        'es');
+    const MAR = t(6,  'Marruecos',     'ma');
+    const FRA = t(7,  'Francia',       'fr');
+    const SEN = t(8,  'Senegal',       'sn');
+    const ALE = t(9,  'Alemania',      'de');
+    const SUI = t(10, 'Suiza',         'ch');
+    const POR = t(11, 'Portugal',      'pt');
+    const POL = t(12, 'Polonia',       'pl');
+    const ING = t(13, 'Inglaterra',    'gb-eng');
+    const COL = t(14, 'Colombia',      'co');
+    const PBA = t(15, 'Países Bajos',  'nl');
+    const MEX = t(16, 'México',        'mx');
+
+    const m = (id: number, order: number, home: any, away: any, date: string, status: string, winner: any, pred: any, isCorrect: boolean | null) => ({
+      idMatch: id, matchOrder: order,
+      homeTeam: home, awayTeam: away,
+      matchDate: date, status, winner,
+      prediction: { idPrediction: id * 10, predictedWinner: pred, isCorrect },
+    });
+
+    return {
+      participant: { idParticipant: 1, name: 'Carlos Pérez' },
+      submitted: true,
+      score: 6,
+      bracket: [
+        {
+          stage: 'octavos',
+          matches: [
+            m(1,  1,  ARG, ECU, '2026-07-10T18:00:00.000Z', 'finished', ARG, ARG, true),
+            m(2,  2,  BRA, URU, '2026-07-10T22:00:00.000Z', 'finished', BRA, BRA, true),
+            m(3,  3,  ESP, MAR, '2026-07-11T18:00:00.000Z', 'finished', ESP, MAR, false),
+            m(4,  4,  FRA, SEN, '2026-07-11T22:00:00.000Z', 'finished', FRA, FRA, true),
+            m(5,  5,  ALE, SUI, '2026-07-12T18:00:00.000Z', 'finished', ALE, ALE, true),
+            m(6,  6,  POR, POL, '2026-07-12T22:00:00.000Z', 'finished', POR, POR, true),
+            m(7,  7,  ING, COL, '2026-07-13T18:00:00.000Z', 'finished', COL, COL, true),
+            m(8,  8,  PBA, MEX, '2026-07-13T22:00:00.000Z', 'finished', PBA, PBA, true),
+          ],
+        },
+        {
+          stage: 'cuartos',
+          matches: [
+            m(9,  9,  ARG, BRA, '2026-07-17T18:00:00.000Z', 'finished', ARG, ARG, true),
+            m(10, 10, ESP, FRA, '2026-07-17T22:00:00.000Z', 'finished', FRA, ESP, false),
+            m(11, 11, ALE, POR, '2026-07-18T18:00:00.000Z', 'finished', POR, POR, true),
+            m(12, 12, COL, PBA, '2026-07-18T22:00:00.000Z', 'pending',  null, PBA, null),
+          ],
+        },
+        {
+          stage: 'semifinal',
+          matches: [
+            m(13, 13, ARG, FRA, '2026-07-21T22:00:00.000Z', 'pending', null, ARG, null),
+            m(14, 14, POR, PBA, '2026-07-22T22:00:00.000Z', 'pending', null, PBA, null),
+          ],
+        },
+        {
+          stage: 'tercer_lugar',
+          matches: [
+            m(15, 15, FRA, POR, '2026-07-25T18:00:00.000Z', 'pending', null, POR, null),
+          ],
+        },
+        {
+          stage: 'final',
+          matches: [
+            m(16, 16, ARG, PBA, '2026-07-26T22:00:00.000Z', 'pending', null, ARG, null),
+          ],
+        },
+      ],
+    };
+  }
+
   async getByParticipant(participantId: number, teamId: number): Promise<any> {
     const participant = await this.participantRepo.findOne({
       where: { idParticipant: participantId, teamId } as any,
